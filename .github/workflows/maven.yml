@@ -16,9 +16,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -30,17 +28,28 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+  publish:
+    name: publish to docker hub
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-    - name: Docker build
-      uses: docker/build-push-action@v5
-      with:
-       push: ${{ github.event_name != 'pull_request' }}
-       tags: keyfgl/spring-boot-github-actions:latest,keyfgl/spring-boot-github-actions:01
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker build
+        uses: docker/build-push-action@v5
+        with:
+         push: ${{ github.event_name != 'pull_request' }}
+         tags: keyfgl/spring-boot-github-actions:latest,keyfgl/spring-boot-github-actions:01
+         cache-from: type=gha
+         cache-to: type=gha,mode=max
+         platforms: linux/amd64,linux/arm64,linux/arm/v7
