@@ -33,8 +33,6 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -50,6 +48,3 @@ jobs:
         with:
          push: ${{ github.event_name != 'pull_request' }}
          tags: keyfgl/spring-boot-github-actions:latest,keyfgl/spring-boot-github-actions:01
-         cache-from: type=gha
-         cache-to: type=gha,mode=max
-         platforms: linux/amd64,linux/arm64,linux/arm/v7
