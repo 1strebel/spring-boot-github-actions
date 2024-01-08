@@ -34,9 +34,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -46,24 +43,8 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Docker meta
-        id: docker_meta
-        uses: docker/metadata-action@v5
-        with:
-          images: keyfgl/spring-boot-github-actions
-          flavor: |
-            latest=false
-          tags: |
-            type=raw,value=04
-            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-            type=ref,event=pr
-            type=ref,event=branch
-            type=semver,pattern={{version}}    
-
       - name: Docker build
         uses: docker/build-push-action@v5
         with:
-         push: true
-         tags: ${{ steps.docker_meta.outputs.tags }}
-         labels: ${{ steps.docker_meta.outputs.labels }}
-         platforms: linux/amd64,linux/arm64,linux/arm/v7
+         push: ${{ github.event_name != 'pull_request' }}
+         tags: keyfgl/spring-boot-github-actions:latest,keyfgl/spring-boot-github-actions:01
