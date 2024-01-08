@@ -46,5 +46,6 @@ jobs:
       - name: Docker build
         uses: docker/build-push-action@v5
         with:
+         context: .
          push: ${{ github.event_name != 'pull_request' }}
          tags: keyfgl/spring-boot-github-actions:latest,keyfgl/spring-boot-github-actions:01

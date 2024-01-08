@@ -1,4 +1,5 @@
-FROM eclipse-temurin:17-jdk-alpine
+FROM openjdk:17-alpine
 EXPOSE 8080
-ADD target/example-of-github-actions.jar example-of-github-actions.jar
-ENTRYPOINT ["java","-jar","/example-of-github-actions.jar"]
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
