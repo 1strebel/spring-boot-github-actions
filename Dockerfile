@@ -1,4 +1,4 @@
-FROM openjdk:17-alpine
+FROM openjdk:21
 EXPOSE 8080
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
