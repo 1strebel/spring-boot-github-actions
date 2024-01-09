@@ -1,0 +1,15 @@
+services:
+  myimage:
+    image: keyfgl/spring-boot-github-actions
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: "2s"
+      timeout: "5s"
+      retries: 5
+  check:
+    image: nginx:latest
+    depends_on:
+      myimage:
+        condition: service_healthy
+    # run all your tests here against the myimage service
+    command: bash -c "curl --fail http://myimage:8080/home || exit 1"

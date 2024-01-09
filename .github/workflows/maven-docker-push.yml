@@ -1,18 +1,17 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Java CI with Maven
+name: Spring Boot Application CI with Maven, Docker, Kubernetes
 
 on:
   push:
     branches: [ "master" ]
+    paths-ignore:
+      - 'README.md'
   pull_request:
     branches: [ "master" ]
+    paths-ignore:
+      - 'README.md'
+  schedule:
+    # re-run monthly to keep image fresh with upstream base images
+    - cron: '0 9 1 * *'
 
 jobs:
   build:
@@ -21,6 +20,7 @@ jobs:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
       packages: write
+      pull-requests: write
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 21
