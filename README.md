@@ -1,3 +1,5 @@
+[![Super-Linter](https://github.com/1strebel/spring-boot-github-actions/actions/workflows/super-linter.yml/badge.svg)](https://github.com/marketplace/actions/super-linter)
+
 ## Github Actions training
 
 Simple `Spring Boot` application with one controller, designed to demonstrate the capabilities of `Github Actions`.
