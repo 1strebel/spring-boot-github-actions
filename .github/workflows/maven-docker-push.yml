@@ -20,6 +20,7 @@ jobs:
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      packages: write
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 21
@@ -42,6 +43,42 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Login to ghcr.io registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and Push to GHCR
+      uses: docker/build-push-action@v5
+      with:
+        push: true
+        tags: ghcr.io/keyfgl/spring-boot-github-actions:${{ github.run_id }}
+        target: test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64
+
+    - uses: AbsaOSS/k3d-action@v2
+      with:
+        cluster-name: "test-cluster-1"
+        args: >-
+          --agents 1
+          --no-lb
+          --k3s-arg "--no-deploy=traefik,servicelb,metrics-server@server:*"
+
+    - name: Smoke test deployment in k3d Kubernetes
+      run: |
+        kubectl create secret docker-registry regcred \
+          --docker-server=https://ghcr.io \
+          --docker-username=${{ github.actor }} \
+          --docker-password=${{ secrets.GITHUB_TOKEN }}
+        export TESTING_IMAGE=ghcr.io/keyfgl/spring-boot-github-actions:"$GITHUB_RUN_ID"
+        envsubst < manifests/kubernetes.yaml  | kubectl apply -f -
+        kubectl rollout status deployment myapp
+        kubectl exec deploy/myapp -- curl --fail http://localhost:8080/actuator/health 
 
     - name: Build and export to Docker
       uses: docker/build-push-action@v5
@@ -83,7 +120,7 @@ jobs:
         flavor: |
           latest=false
         tags: |
-          type=raw,value=04
+          type=raw,value=ks
           type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
           type=ref,event=pr
           type=ref,event=branch
