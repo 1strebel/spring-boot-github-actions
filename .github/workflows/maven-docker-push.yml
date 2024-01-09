@@ -27,6 +27,10 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -42,3 +46,7 @@ jobs:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
         tags: keyfgl/spring-boot-github-actions:latest,keyfgl/spring-boot-github-actions:01
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64,linux/arm/v7
+
