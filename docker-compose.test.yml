@@ -1,0 +1,10 @@
+services:
+  myimage:
+    image: "${TESTING_IMAGE}"
+  check:
+    image: "${TESTING_IMAGE}"
+    depends_on:
+      myimage:
+        condition: service_started
+    # run all your tests here against the myimage service
+    command: curl --fail http://myimage:8080/home || exit 1
