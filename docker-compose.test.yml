@@ -2,7 +2,7 @@ services:
   myimage:
     image: ${TESTING_IMAGE}
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/home" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: "2s"
       timeout: "5s"
       retries: 5
