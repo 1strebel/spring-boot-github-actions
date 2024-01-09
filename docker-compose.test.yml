@@ -1,10 +1,15 @@
 services:
   myimage:
-    image: "${TESTING_IMAGE}"
+    image: ${TESTING_IMAGE}
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/home" ]
+      interval: "2s"
+      timeout: "5s"
+      retries: 5
   check:
-    image: "${TESTING_IMAGE}"
+    image: nginx:latest
     depends_on:
       myimage:
-        condition: service_started
+        condition: service_healthy
     # run all your tests here against the myimage service
-    command: curl --fail http://myimage:8080/home || exit 1
+    command: bash -c "curl --fail http://myimage:8080/home || exit 1"
