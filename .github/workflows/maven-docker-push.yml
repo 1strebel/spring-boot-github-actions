@@ -54,6 +54,7 @@ jobs:
     - name: Build and Push to GHCR
       uses: docker/build-push-action@v5
       with:
+        context: .
         push: true
         tags: ghcr.io/keyfgl/spring-boot-github-actions:${{ github.run_id }}
         cache-from: type=gha
