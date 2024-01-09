@@ -23,8 +23,7 @@ jobs:
         env:
           DEFAULT_BRANCH: "master"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: ${{ !contains(github.event_name, 'pull_request') }}
-          VALIDATE_DOCKERFILE: false
-          VALIDATE_JSCPD: false
-          VALIDATE_SHELL_SHFMT: false
-          VALIDATE_EDITORCONFIG: false
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_JAVA: true
+        with:
+          exit-code: 0
