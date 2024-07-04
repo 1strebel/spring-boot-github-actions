@@ -52,7 +52,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and Push to GHCR
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         push: true
@@ -81,7 +81,7 @@ jobs:
         kubectl exec deploy/myapp -- curl --fail http://localhost:8080/actuator/health 
 
     - name: Build and export to Docker
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         push: false
@@ -127,7 +127,7 @@ jobs:
           type=semver,pattern={{version}}      
 
     - name: Docker build and Push to Docker Hub
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         push: true
