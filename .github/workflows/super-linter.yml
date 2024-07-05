@@ -6,6 +6,10 @@
 # https://github.com/github/super-linter
 name: Lint Code Base
 
+permissions:
+  contents: read     
+  statuses: write
+  
 on:
   push:
     branches: [ "master" ]
@@ -17,11 +21,26 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Set DEFAULT_BRANCH to PR target
+        run: |
+          echo "DEFAULT_BRANCH=${{ github.base_ref }}" >> $GITHUB_ENV
+          echo "this is a PR branch. Let's only lint the files that are changed against the target branch '${{ github.base_ref }}'"
+
+      - name: Set DEFAULT_BRANCH to current branch
+        if: ${{ github.base_ref == '' }}
+        run: |
+          # shellcheck disable=2086
+          echo "DEFAULT_BRANCH=$(echo '${{ github.ref }}' | sed 's/refs\/heads\///')" >> $GITHUB_ENV
+          echo "this is just a branch push, not a PR."
+          
       - name: Lint Code Base
-        uses: github/super-linter@v6
+        uses: super-linter/super-linter/slim@v6.6.0
         env:
-          DEFAULT_BRANCH: "master"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ env.DEFAULT_BRANCH }}
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_JAVA: true
+          KUBERNETES_KUBEVAL_OPTIONS: --ignore-missing-schemas --schema-location https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/  
