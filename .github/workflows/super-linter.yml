@@ -37,7 +37,7 @@ jobs:
           echo "this is just a branch push, not a PR."
           
       - name: Lint Code Base
-        uses: super-linter/super-linter/slim@v6.6.0
+        uses: super-linter/super-linter/slim@v6.8.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: ${{ env.DEFAULT_BRANCH }}
